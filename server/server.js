@@ -16,7 +16,10 @@ import { db } from './db.js';
 import { seedDatabase } from './seed.js';
 import { supabase } from './supabaseClient.js';
 import { loginStudentFromSupabase } from './loginSupabase.js';
-import { registerStudentInSupabase } from './registerSupabase.js';
+import {
+  registerStudentInSupabase,
+  registerByPhoneInSupabase
+} from './registerSupabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -375,6 +378,86 @@ function hasCaptainProgramAccess(user, program) {
      });
    }
  });
+
+ // Unified Phone Registration
+app.post('/api/auth/register-by-phone', async (req, res) => {
+  try {
+    const {
+      full_name,
+      phone,
+      password
+    } = req.body || {};
+
+    if (
+      !cleanText(full_name) ||
+      cleanText(full_name).length < 2 ||
+      cleanText(full_name).length > 200 ||
+      !isValidPhone(phone) ||
+      typeof password !== 'string' ||
+      password.length < 8 ||
+      Buffer.byteLength(password, 'utf8') > 72
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: 'Valid name, phone and password (8+ characters) are required.'
+      });
+    }
+
+    const result = await registerByPhoneInSupabase({
+      full_name,
+      phone,
+      password
+    });
+
+    const user = result.user;
+    const captainAssignment = result.captain_assignment;
+
+    const token = createAuthToken(user);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Registration successful.',
+      token,
+      user: safeUserResponse(user, captainAssignment)
+    });
+
+  } catch (error) {
+    const messages = {
+      INVALID_REGISTRATION_DATA: [
+        400,
+        'Invalid registration information.'
+      ],
+      PHONE_ALREADY_REGISTERED: [
+        409,
+        'This phone number is already registered. Please log in.'
+      ],
+      PHONE_NOT_APPROVED: [
+        403,
+        'This phone number is not in the approved roster.'
+      ],
+      MULTIPLE_STUDENT_PROGRAMS: [
+        409,
+        'Multiple programs found for this phone. Contact Admin.'
+      ]
+    };
+
+    const known = messages[error.message];
+
+    if (known) {
+      return res.status(known[0]).json({
+        success: false,
+        error: known[1]
+      });
+    }
+
+    console.error('Phone registration error:', error.message);
+
+    return res.status(503).json({
+      success: false,
+      error: 'Registration service temporarily unavailable.'
+    });
+  }
+});
 
  // Student / Captain Login
  app.post('/api/auth/login', async (req, res) => {

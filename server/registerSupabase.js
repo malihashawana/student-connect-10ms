@@ -2,29 +2,88 @@
 import bcrypt from 'bcryptjs';
 import { supabase } from './supabaseClient.js';
 
-export async function registerStudentInSupabase(input) {
-  const clean = (value) =>
-    typeof value === 'string' ? value.trim() : '';
-
-  
-let phone = clean(input.phone).replace(/\D/g, '');
-
-if (phone.startsWith('880')) {
-  phone = '0' + phone.slice(3);
+function clean(value) {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
-if (!/^01[3-9]\d{8}$/.test(phone)) {
-  throw new Error('INVALID_REGISTRATION_DATA');
+function normalizePhone(value) {
+  let phone = String(value || '').replace(/\D/g, '');
+
+  if (phone.startsWith('880')) {
+    phone = '0' + phone.slice(3);
+  }
+
+  return phone;
 }
 
-  const password = input.password;
+export async function registerByPhoneInSupabase(input) {
+  const fullName = clean(input?.full_name);
+  const phone = normalizePhone(input?.phone);
+  const password = input?.password;
 
   if (
-    !clean(input.tms_id) ||
-    !phone ||
-    !clean(input.program) ||
-    !clean(input.full_name) ||
-    !clean(input.department) ||
+    fullName.length < 2 ||
+    fullName.length > 200 ||
+    !/^01[3-9]\d{8}$/.test(phone) ||
+    typeof password !== 'string' ||
+    password.length < 8 ||
+    Buffer.byteLength(password, 'utf8') > 72
+  ) {
+    throw new Error('INVALID_REGISTRATION_DATA');
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  const { data, error } = await supabase.rpc(
+    'register_by_phone_atomic',
+    {
+      p_full_name: fullName,
+      p_phone: phone,
+      p_password_hash: passwordHash
+    }
+  );
+
+  if (error) {
+    const knownErrors = [
+      'INVALID_REGISTRATION_DATA',
+      'PHONE_ALREADY_REGISTERED',
+      'PHONE_NOT_APPROVED',
+      'MULTIPLE_STUDENT_PROGRAMS'
+    ];
+
+    const matchedError = knownErrors.find(code =>
+      error.message?.includes(code)
+    );
+
+    if (matchedError) {
+      throw new Error(matchedError);
+    }
+
+    console.error('Registration RPC error:', error.message);
+    throw new Error('REGISTRATION_DATABASE_ERROR');
+  }
+
+  if (!data?.user?.id) {
+    throw new Error('REGISTRATION_DATABASE_ERROR');
+  }
+
+  return {
+    user: data.user,
+    captain_assignment: data.captain_assignment || null
+  };
+}
+
+// Legacy registration kept for existing backend compatibility.
+export async function registerStudentInSupabase(input) {
+  const phone = normalizePhone(input?.phone);
+  const password = input?.password;
+
+  if (
+    !clean(input?.tms_id) ||
+    !/^01[3-9]\d{8}$/.test(phone) ||
+    !clean(input?.program) ||
+    !clean(input?.full_name) ||
+    !clean(input?.department) ||
     typeof password !== 'string' ||
     password.length < 6
   ) {
@@ -49,14 +108,8 @@ if (!/^01[3-9]\d{8}$/.test(phone)) {
       p_academic_year: clean(input.academic_year),
       p_address: clean(input.address),
       p_contact_phone: input.contact_phone
-  ? (() => {
-      let contact = clean(input.contact_phone).replace(/\D/g, '');
-      if (contact.startsWith('880')) {
-        contact = '0' + contact.slice(3);
-      }
-      return contact;
-    })()
-  : phone
+        ? normalizePhone(input.contact_phone)
+        : phone
     }
   );
 
