@@ -641,6 +641,45 @@
   ],
   "audit_logs": [
     {
+      "id": "LOG-1794167978247-980",
+      "actor_user_id": "STAFF-1001",
+      "actor_name": "Tanvir Hossain (Lead Operations)",
+      "actor_role": "admin",
+      "action": "STAFF_LOGIN",
+      "target_type": "user",
+      "target_id": "STAFF-1001",
+      "metadata": {
+        "role": "admin"
+      },
+      "timestamp": "2026-11-08T19:59:38.247Z"
+    },
+    {
+      "id": "LOG-1794167789926-913",
+      "actor_user_id": "STAFF-1002",
+      "actor_name": "Anika Rahman (Issue Desk Specialist)",
+      "actor_role": "staff",
+      "action": "STAFF_LOGIN",
+      "target_type": "user",
+      "target_id": "STAFF-1002",
+      "metadata": {
+        "role": "staff"
+      },
+      "timestamp": "2026-11-08T19:56:29.926Z"
+    },
+    {
+      "id": "LOG-1794161464518-449",
+      "actor_user_id": "STAFF-1002",
+      "actor_name": "Anika Rahman (Issue Desk Specialist)",
+      "actor_role": "staff",
+      "action": "STAFF_LOGIN",
+      "target_type": "user",
+      "target_id": "STAFF-1002",
+      "metadata": {
+        "role": "staff"
+      },
+      "timestamp": "2026-11-08T18:11:04.518Z"
+    },
+    {
       "id": "LOG-1794158302392-343",
       "actor_user_id": "STAFF-1001",
       "actor_name": "Tanvir Hossain (Lead Operations)",

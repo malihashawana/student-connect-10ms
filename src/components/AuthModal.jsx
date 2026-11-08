@@ -30,54 +30,38 @@ export default function AuthModal({ onLoginSuccess, lang }) {
   const [submittingLogin, setSubmittingLogin] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  // Registration Wizard (Step 1: Verify Roster, Step 2: Set Password & Profile)
-  const [regStep, setRegStep] = useState(1);
-  const [regTms, setRegTms] = useState('');
-  const [regPhone, setRegPhone] = useState('');
-  const [regProgram, setRegProgram] = useState('HSC 28');
-  const [verifyingRoster, setVerifyingRoster] = useState(false);
-  const [verifiedRosterData, setVerifiedRosterData] = useState(null);
-  const [rosterVerifyError, setRosterVerifyError] = useState('');
-
-  // Step 2 Fields
+  // One registration form for all approved phone numbers.
   const [regName, setRegName] = useState('');
+  const [regPhone, setRegPhone] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
-  const [regDept, setRegDept] = useState('Science'); // Science / Commerce / Arts
-  const [regCollege, setRegCollege] = useState('');
-  const [regDistrict, setRegDistrict] = useState('Dhaka');
-  const [regEmail, setRegEmail] = useState('');
-  const [regAddress, setRegAddress] = useState('');
   const [submittingRegister, setSubmittingRegister] = useState(false);
   const [registerError, setRegisterError] = useState('');
+  const [registerSuccess, setRegisterSuccess] = useState('');
 
-  // Quick Demo Logins
-  const handleDemoFill = async (type) => {
-    setLoginError('');
-    if (type === 'science') {
-      setPortalMode('student');
-      setPhone('01811000002');
-      setPassword('student123');
-    } else if (type === 'business') {
-      setPortalMode('student');
-      setPhone('01911000003');
-      setPassword('student123');
-    } else if (type === 'humanities') {
-      setPortalMode('student');
-      setPhone('01611000004');
-      setPassword('student123');
-    } else if (type === 'captain') {
-      setPortalMode('student');
-      setPhone('01711000001');
-      setPassword('captain123');
-    } else if (type === 'staff') {
-      setPortalMode('staff');
-      setStaffId('STAFF-1002');
-      setPassword('admin123');
-    } else if (type === 'admin') {
-      setPortalMode('staff');
-      setStaffId('STAFF-1001');
-      setPassword('admin123');
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setRegisterError('');
+    setRegisterSuccess('');
+    const raw = regPhone.replace(/\D/g, '');
+    const normalizedPhone = raw.startsWith('880') ? `0${raw.slice(3)}` : raw;
+    if (!regName.trim()) return setRegisterError('Enter your full name.');
+    if (!/^01[3-9]\d{8}$/.test(normalizedPhone)) return setRegisterError('Enter a valid Bangladesh phone number.');
+    if (regPassword.length < 10 || new TextEncoder().encode(regPassword).length > 72) return setRegisterError('Password must be 10–72 bytes long.');
+    if (regPassword !== regConfirmPassword) return setRegisterError('Passwords do not match.');
+    setSubmittingRegister(true);
+    try {
+      await api.registerByPhone({ full_name: regName.trim(), phone: normalizedPhone, password: regPassword });
+      setPhone(normalizedPhone);
+      setPassword('');
+      setRegPassword('');
+      setRegConfirmPassword('');
+      setRegisterSuccess('Registration successful. Please sign in.');
+      setFormMode('login');
+    } catch (err) {
+      setRegisterError(err.message || 'Registration failed.');
+    } finally {
+      setSubmittingRegister(false);
     }
   };
 
@@ -114,69 +98,6 @@ export default function AuthModal({ onLoginSuccess, lang }) {
       setLoginError(err.message || 'Invalid Staff ID or credentials.');
     } finally {
       setSubmittingLogin(false);
-    }
-  };
-
-  // Step 1: Verify Roster
-  const handleVerifyRosterSubmit = async (e) => {
-    e.preventDefault();
-    if (!regTms || !regPhone || !regProgram) return;
-
-    setVerifyingRoster(true);
-    setRosterVerifyError('');
-
-    try {
-      const res = await api.verifyRoster(regTms.trim(), regPhone.trim(), regProgram);
-      setVerifiedRosterData(res.data);
-      if (res.data.suggested_name) setRegName(res.data.suggested_name);
-      setRegStep(2);
-    } catch (err) {
-      setRosterVerifyError(err.message || 'Entitlement verification failed.');
-    } finally {
-      setVerifyingRoster(false);
-    }
-  };
-
-  // Step 2: Complete Registration
-  const handleCompleteRegister = async (e) => {
-    e.preventDefault();
-    if (regPassword !== regConfirmPassword) {
-      setRegisterError(lang === 'bn' ? 'পাসওয়ার্ড দুইটি মেলেনি।' : 'Passwords do not match.');
-      return;
-    }
-
-    if (regPassword.length < 6) {
-      setRegisterError(lang === 'bn' ? 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।' : 'Password must be at least 6 characters.');
-      return;
-    }
-
-    setSubmittingRegister(true);
-    setRegisterError('');
-
-    try {
-      const deptNormalized = regDept === 'Commerce' ? 'Business Studies' : regDept === 'Arts' ? 'Humanities' : 'Science';
-
-      const payload = {
-        tms_id: verifiedRosterData.tms_id,
-        phone: verifiedRosterData.phone,
-        program: verifiedRosterData.program,
-        department: deptNormalized,
-        full_name: regName.trim(),
-        password: regPassword,
-        college: regCollege.trim() || 'Not Specified',
-        district: regDistrict,
-        email: regEmail.trim(),
-        address: regAddress.trim()
-      };
-
-      const res = await api.register(payload);
-      setToken(res.token);
-      setCurrentUser(res.user);
-      onLoginSuccess(res.user);
-    } catch (err) {
-      setRegisterError(err.message || 'Registration failed');
-    } finally {
-      setSubmittingRegister(false);
     }
   };
 
@@ -258,7 +179,6 @@ export default function AuthModal({ onLoginSuccess, lang }) {
                   type="button"
                   onClick={() => {
                     setFormMode('register');
-                    setRegStep(1);
                   }}
                   className={`text-xs font-bold pb-2 -mb-2.5 transition-colors ${
                     formMode === 'register'
@@ -266,9 +186,16 @@ export default function AuthModal({ onLoginSuccess, lang }) {
                       : 'text-slate-400 hover:text-slate-600'
                   }`}
                 >
-                  {t.register} (with TMS ID)
+                  {t.register}
                 </button>
               </div>
+
+              {registerSuccess && (
+                <div role="status" className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 shrink-0" />
+                  <span>{registerSuccess}</span>
+                </div>
+              )}
 
               {loginError && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold flex items-center gap-2">
@@ -325,218 +252,35 @@ export default function AuthModal({ onLoginSuccess, lang }) {
                 </form>
               )}
 
-              {/* Student Registration Wizard */}
+              {/* Single phone-based registration form */}
               {formMode === 'register' && (
-                <div className="space-y-4">
-                  
-                  {/* Step Indicator */}
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-500 pb-2 border-b border-[#E5E7EB]">
-                    <span>Step {regStep} of 2</span>
-                    <span>{regStep === 1 ? 'TMS Entitlement' : 'Profile & Password'}</span>
+                <form onSubmit={handleRegister} className="space-y-3.5">
+                  {registerError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700">{registerError}</div>}
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Full Name *</label>
+                    <input className="input-ten" type="text" autoComplete="name" required maxLength={120}
+                      value={regName} onChange={e => setRegName(e.target.value)} placeholder="Enter your full name" />
                   </div>
-
-                  {/* Step 1: Pre-Approval Roster Check */}
-                  {regStep === 1 && (
-                    <form onSubmit={handleVerifyRosterSubmit} className="space-y-3.5">
-                      
-                      {rosterVerifyError && (
-                        <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold">
-                          {rosterVerifyError}
-                        </div>
-                      )}
-
-                      <div className="p-2.5 bg-blue-50/70 border border-blue-200 rounded-xl text-xs text-blue-900 leading-relaxed">
-                        Enter your approved <strong>TMS Transaction ID</strong> and registered phone number from your 10MS course purchase.
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-[#111827] mb-1">
-                          TMS Transaction ID *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={regTms}
-                          onChange={(e) => setRegTms(e.target.value)}
-                          placeholder="e.g. TMS-2026-90001"
-                          className="input-ten font-mono"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-[#111827] mb-1">
-                          Login Phone Number *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={regPhone}
-                          onChange={(e) => setRegPhone(e.target.value)}
-                          placeholder="01700112233"
-                          className="input-ten font-mono"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-[#111827] mb-1">
-                          Online Batch / Course *
-                        </label>
-                        <select
-                          value={regProgram}
-                          onChange={(e) => setRegProgram(e.target.value)}
-                          className="input-ten bg-white font-bold"
-                        >
-                          <option value="HSC 28">HSC 28 Online Batch</option>
-                          <option value="HSC 27">HSC 27 Online Batch</option>
-                        </select>
-                      </div>
-
-                      {/* Primary Green CTA */}
-                      <button
-                        type="submit"
-                        disabled={verifyingRoster}
-                        className="w-full btn-primary text-xs"
-                      >
-                        <span>{verifyingRoster ? 'Verifying...' : 'Verify Entitlement'}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-
-                    </form>
-                  )}
-
-                  {/* Step 2: Personal Profile & Password */}
-                  {regStep === 2 && (
-                    <form onSubmit={handleCompleteRegister} className="space-y-3 max-h-[58vh] overflow-y-auto pr-1">
-                      
-                      {registerError && (
-                        <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold">
-                          {registerError}
-                        </div>
-                      )}
-
-                      <div className="p-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-bold flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>Verified: {verifiedRosterData?.tms_id} ({verifiedRosterData?.program})</span>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-[#111827] mb-1">
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={regName}
-                          onChange={(e) => setRegName(e.target.value)}
-                          placeholder="Your full name"
-                          className="input-ten"
-                        />
-                      </div>
-
-                      {/* Group Selection: Science / Commerce / Arts */}
-                      <div>
-                        <label className="block text-xs font-bold text-[#111827] mb-1">
-                          Academic Group *
-                        </label>
-                        <div className="flex gap-2">
-                          {[
-                            { id: 'Science', label: 'Science' },
-                            { id: 'Commerce', label: 'Commerce' },
-                            { id: 'Arts', label: 'Arts' }
-                          ].map((g) => (
-                            <button
-                              key={g.id}
-                              type="button"
-                              onClick={() => setRegDept(g.id)}
-                              className={`group-tab ${regDept === g.id ? 'active' : ''}`}
-                            >
-                              {g.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs font-bold text-[#111827] mb-1">
-                            Password *
-                          </label>
-                          <input
-                            type="password"
-                            required
-                            value={regPassword}
-                            onChange={(e) => setRegPassword(e.target.value)}
-                            placeholder="Min 6 chars"
-                            className="input-ten"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-[#111827] mb-1">
-                            Confirm Password *
-                          </label>
-                          <input
-                            type="password"
-                            required
-                            value={regConfirmPassword}
-                            onChange={(e) => setRegConfirmPassword(e.target.value)}
-                            placeholder="Re-type password"
-                            className="input-ten"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs font-bold text-[#111827] mb-1">
-                            College / School
-                          </label>
-                          <input
-                            type="text"
-                            value={regCollege}
-                            onChange={(e) => setRegCollege(e.target.value)}
-                            placeholder="College name"
-                            className="input-ten"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-[#111827] mb-1">
-                            District
-                          </label>
-                          <input
-                            type="text"
-                            value={regDistrict}
-                            onChange={(e) => setRegDistrict(e.target.value)}
-                            placeholder="Dhaka"
-                            className="input-ten"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setRegStep(1)}
-                          className="btn-secondary text-xs"
-                        >
-                          <ArrowLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="submit"
-                          disabled={submittingRegister}
-                          className="flex-1 btn-primary text-xs"
-                        >
-                          {submittingRegister ? 'Creating Account...' : 'Complete Registration'}
-                        </button>
-                      </div>
-
-                    </form>
-                  )}
-
-                </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Login Phone Number *</label>
+                    <input className="input-ten" type="tel" autoComplete="tel" required
+                      value={regPhone} onChange={e => setRegPhone(e.target.value)} placeholder="01XXXXXXXXX" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Password *</label>
+                    <input className="input-ten" type="password" autoComplete="new-password" minLength={10} required
+                      value={regPassword} onChange={e => setRegPassword(e.target.value)} placeholder="At least 10 characters" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold mb-1">Confirm Password *</label>
+                    <input className="input-ten" type="password" autoComplete="new-password" minLength={10} required
+                      value={regConfirmPassword} onChange={e => setRegConfirmPassword(e.target.value)} placeholder="Re-enter password" />
+                  </div>
+                  <button type="submit" disabled={submittingRegister} className="w-full btn-primary text-sm disabled:opacity-50">
+                    {submittingRegister ? 'Creating Account...' : 'Register'}
+                  </button>
+                </form>
               )}
-
             </div>
           )}
 
@@ -600,68 +344,6 @@ export default function AuthModal({ onLoginSuccess, lang }) {
             </form>
           )}
 
-          {/* Quick Demo Test Buttons */}
-          <div className="pt-3 border-t border-[#E5E7EB] space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block text-center">
-              Quick 1-Click Demo Logins
-            </span>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-[11px]">
-              <button
-                type="button"
-                onClick={() => handleDemoFill('science')}
-                className="p-1.5 rounded-lg bg-blue-50 text-blue-800 hover:bg-blue-100 font-bold border border-blue-200 transition-colors text-left"
-              >
-                🔬 Science (HSC 28)
-                <span className="block text-[9px] text-blue-600 font-mono">01811000002</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoFill('business')}
-                className="p-1.5 rounded-lg bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold border border-emerald-200 transition-colors text-left"
-              >
-                💼 Commerce (HSC 28)
-                <span className="block text-[9px] text-emerald-600 font-mono">01911000003</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoFill('humanities')}
-                className="p-1.5 rounded-lg bg-purple-50 text-purple-800 hover:bg-purple-100 font-bold border border-purple-200 transition-colors text-left"
-              >
-                📚 Arts (HSC 27)
-                <span className="block text-[9px] text-purple-600 font-mono">01611000004</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoFill('captain')}
-                className="p-1.5 rounded-lg bg-amber-50 text-amber-900 hover:bg-amber-100 font-bold border border-amber-300 transition-colors text-left"
-              >
-                🎖️ Captain (Rahat)
-                <span className="block text-[9px] text-amber-700 font-mono">01711000001</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoFill('staff')}
-                className="p-1.5 rounded-lg bg-slate-100 text-slate-800 hover:bg-slate-200 font-bold border border-slate-300 transition-colors text-left"
-              >
-                🎧 Support Staff
-                <span className="block text-[9px] text-slate-600 font-mono">STAFF-1002</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoFill('admin')}
-                className="p-1.5 rounded-lg bg-red-50 text-red-800 hover:bg-red-100 font-bold border border-red-200 transition-colors text-left"
-              >
-                🛡️ Lead Admin
-                <span className="block text-[9px] text-red-600 font-mono">STAFF-1001</span>
-              </button>
-            </div>
-          </div>
 
         </div>
 

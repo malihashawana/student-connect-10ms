@@ -20,13 +20,13 @@ import {
   FileEdit,
   Smartphone,
   HelpCircle,
-  Trash2
+  Trash2,
+  Copy,
+  RefreshCw
 } from 'lucide-react';
-import { translations } from '../translations';
 import { api } from '../api';
 
 export default function StaffDesk({ user, onSelectTicket, lang }) {
-  const t = translations[lang] || translations.en;
 
   // Active top-level tab: 'tickets' | 'roster' | 'captains' | 'notices' | 'audit'
   const [activeTab, setActiveTab] = useState('tickets');
@@ -44,6 +44,8 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
   // Tickets Data
   const [ticketsData, setTicketsData] = useState({ metrics: {}, tickets: [] });
   const [loadingTickets, setLoadingTickets] = useState(false);
+  const [actionError, setActionError] = useState('');
+  const [busyAction, setBusyAction] = useState(false);
 
   // Roster Tab Data
   const [rosterData, setRosterData] = useState({ metrics: {}, roster: [] });
@@ -58,7 +60,13 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
   const [bulkRosterText, setBulkRosterText] = useState('');
 
   // Captains Tab Data
-  const [captainsData, setCaptainsData] = useState({ captains: [], candidates: [] });
+  const [captainRoster, setCaptainRoster] = useState([]);
+  const [captainRosterLoading, setCaptainRosterLoading] = useState(false);
+  const [captainRosterError, setCaptainRosterError] = useState('');
+  const [captainSearch, setCaptainSearch] = useState('');
+  const [captainStatusFilter, setCaptainStatusFilter] = useState('ALL');
+  const [invitingCaptainId, setInvitingCaptainId] = useState(null);
+  const [issuedInvitation, setIssuedInvitation] = useState(null);
 
   // Notices Tab Data
   const [notices, setNotices] = useState([]);
@@ -84,9 +92,11 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
       if (searchQuery) params.search = searchQuery;
 
       const res = await api.getTickets(params);
-      setTicketsData(res);
+      setTicketsData({ metrics: res?.metrics || {}, tickets: res?.tickets || [] });
+      setActionError('');
     } catch (err) {
       console.error('Failed to load tickets:', err);
+      setActionError(err.message || 'Failed to load tickets.');
     } finally {
       setLoadingTickets(false);
     }
@@ -114,19 +124,57 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
         claimed: rosterClaimFilter !== 'ALL' ? rosterClaimFilter : undefined,
         search: rosterSearch || undefined
       });
-      setRosterData(res);
+      setRosterData({ metrics: res?.metrics || {}, roster: res?.roster || [] });
     } catch (err) {
       console.error(err);
+      setActionError(err.message || 'Unable to load data.');
     }
   };
 
-  // Fetch Captains
+  // Admin-only: fetch preapproved Captain roster (not student promotion candidates).
   const fetchCaptains = async () => {
+    if (user?.role !== 'admin') return;
+    setCaptainRosterLoading(true);
+    setCaptainRosterError('');
     try {
-      const res = await api.getCaptains();
-      setCaptainsData(res);
+      const res = await api.getCaptainRoster();
+      setCaptainRoster(res?.captains || []);
     } catch (err) {
-      console.error(err);
+      setCaptainRosterError(err.message || 'Unable to load Captain roster.');
+    } finally {
+      setCaptainRosterLoading(false);
+    }
+  };
+
+  const handleGenerateCaptainInvite = async (captain) => {
+    if (user?.role !== 'admin' || invitingCaptainId) return;
+    if (!window.confirm(`Generate a new 15-minute registration code for ${captain.full_name}? Any earlier code will stop working.`)) return;
+    setInvitingCaptainId(captain.id);
+    setCaptainRosterError('');
+    setIssuedInvitation(null);
+    try {
+      const res = await api.generateCaptainInvite(captain.id);
+      setIssuedInvitation({
+        captain_name: res.captain_name || captain.full_name,
+        login_phone: res.login_phone || captain.login_phone,
+        registration_code: res.registration_code,
+        expires_at: res.expires_at
+      });
+      await fetchCaptains();
+    } catch (err) {
+      setCaptainRosterError(err.message || 'Unable to generate invitation.');
+    } finally {
+      setInvitingCaptainId(null);
+    }
+  };
+
+  const copyCaptainInvitation = async () => {
+    if (!issuedInvitation) return;
+    const message = `Connect10MS Captain Registration\nName: ${issuedInvitation.captain_name}\nLogin Number: ${issuedInvitation.login_phone}\nRegistration Code: ${issuedInvitation.registration_code}\nExpires: ${new Date(issuedInvitation.expires_at).toLocaleString()}\nUse this code privately to register and set your password.`;
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch (err) {
+      setCaptainRosterError('Clipboard access failed. Please copy the code manually.');
     }
   };
 
@@ -134,9 +182,10 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
   const fetchNotices = async () => {
     try {
       const res = await api.getNotices();
-      setNotices(res.notices || []);
+      setNotices(res?.notices || []);
     } catch (err) {
       console.error(err);
+      setActionError(err.message || 'Unable to load data.');
     }
   };
 
@@ -144,9 +193,10 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
   const fetchAudit = async () => {
     try {
       const res = await api.getAuditLogs({ search: auditSearch || undefined });
-      setAuditLogs(res.logs || []);
+      setAuditLogs(res?.logs || []);
     } catch (err) {
       console.error(err);
+      setActionError(err.message || 'Unable to load data.');
     }
   };
 
@@ -161,38 +211,67 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
     return true;
   });
 
+  const displayRoster = (rosterData.roster || []).filter(r => {
+    if (selectedProgram !== 'ALL' && r.program !== selectedProgram) return false;
+    if (rosterClaimFilter === 'true' && !r.is_claimed) return false;
+    if (rosterClaimFilter === 'false' && r.is_claimed) return false;
+    const q = rosterSearch.trim().toLowerCase();
+    return !q || [r.tms_id, r.phone, r.student_name, r.program]
+      .some(value => String(value || '').toLowerCase().includes(q));
+  });
+
+  const displayAuditLogs = auditLogs.filter(log => {
+    const q = auditSearch.trim().toLowerCase();
+    return !q || [log.action, log.actor_name, log.actor_role, log.target_id]
+      .some(value => String(value || '').toLowerCase().includes(q));
+  });
+
+  const displayCaptains = captainRoster.filter(c => {
+    if (selectedProgram !== 'ALL' && c.program !== selectedProgram) return false;
+    const registered = Boolean(c.claimed_user_id);
+    if (captainStatusFilter === 'REGISTERED' && !registered) return false;
+    if (captainStatusFilter === 'NOT_REGISTERED' && registered) return false;
+    const q = captainSearch.trim().toLowerCase();
+    return !q || [c.full_name, c.program, c.subject, c.login_phone, ...(c.reference_ids || [])]
+      .some(v => String(v || '').toLowerCase().includes(q));
+  });
+
+  const getTicketNumber = t => t.ticket_number || t.id;
+  const csvCell = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
+
   // Export Tickets to CSV
   const handleExportCSV = () => {
-    if (displayTickets.length === 0) return alert('No tickets to export');
-    const headers = ['ID', 'Category', 'Program', 'Department', 'Subject', 'Priority', 'Status', 'Reporter', 'Phone', 'Title', 'Date'];
+    if (!displayTickets.length) {
+      alert('No tickets to export');
+      return;
+    }
+    const headers = ['Ticket Number', 'Category', 'Program', 'Department', 'Subject', 'Priority', 'Status', 'Reporter', 'Phone', 'Title', 'Date'];
     const rows = displayTickets.map(t => [
-      t.id,
-      t.category,
-      t.program,
-      t.department,
-      t.subject,
-      t.priority,
-      t.status,
-      `"${t.reporter_name}"`,
-      t.reporter_phone,
-      `"${(t.title || '').replace(/"/g, '""')}"`,
-      t.created_at
+      getTicketNumber(t), t.category, t.program, t.department, t.subject,
+      t.priority, t.status, t.reporter_name, t.reporter_phone, t.title, t.created_at
     ]);
-
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const csv = '\uFEFF' + [headers, ...rows]
+      .map(row => row.map(csvCell).join(','))
+      .join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `connect10ms_tickets_${Date.now()}.csv`);
+    link.href = url;
+    link.download = `connect10ms_tickets_${Date.now()}.csv`;
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
+  // Roster import requires a matching backend endpoint; do not silently pretend it succeeded.
   // Add Single Roster Entry
   const handleAddSingleRoster = async (e) => {
     e.preventDefault();
     if (!newRosterTms || !newRosterPhone || !newRosterProgram) return;
+    if (typeof api.importRoster !== 'function') {
+      alert('Roster import API is not available yet.');
+      return;
+    }
 
     try {
       await api.importRoster([{
@@ -215,6 +294,10 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
   const handleBulkImportRoster = async (e) => {
     e.preventDefault();
     if (!bulkRosterText.trim()) return;
+    if (typeof api.importRoster !== 'function') {
+      alert('Roster import API is not available yet.');
+      return;
+    }
 
     const lines = bulkRosterText.split('\n');
     const entries = [];
@@ -245,16 +328,6 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
     }
   };
 
-  // Toggle Captain
-  const handleToggleCaptain = async (userId, makeCaptain) => {
-    try {
-      await api.toggleCaptain({ user_id: userId, make_captain: makeCaptain });
-      fetchCaptains();
-    } catch (err) {
-      alert(err.message || 'Action failed');
-    }
-  };
-
   // Create Notice
   const handleCreateNotice = async (e) => {
     e.preventDefault();
@@ -265,13 +338,16 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
         title: noticeTitle,
         content: noticeContent,
         priority: noticePriority,
-        target_program: noticeTargetProgram,
-        target_department: noticeTargetDept
+        program: noticeTargetProgram === 'ALL' ? 'All' : noticeTargetProgram,
+        department: noticeTargetDept === 'ALL' ? 'All' : noticeTargetDept
       });
       setShowAddNoticeModal(false);
       setNoticeTitle('');
       setNoticeContent('');
-      fetchNotices();
+      setNoticePriority('Normal');
+      setNoticeTargetProgram('ALL');
+      setNoticeTargetDept('ALL');
+      await fetchNotices();
     } catch (err) {
       alert(err.message || 'Failed to create notice');
     }
@@ -341,6 +417,13 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
         </div>
 
       </div>
+
+      {actionError && (
+        <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-700">
+          {actionError}
+          <button type="button" className="ml-3 underline" onClick={() => setActionError('')}>Dismiss</button>
+        </div>
+      )}
 
       {/* ================= TAB 1: TICKETS ISSUE DESK ================= */}
       {activeTab === 'tickets' && (
@@ -421,7 +504,7 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
-                All Tickets ({ticketsData.metrics?.total || 0})
+                All Tickets ({(ticketsData.tickets || []).length})
               </button>
               <button
                 onClick={() => setSelectedQueue('IMPORTANT')}
@@ -432,7 +515,7 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
                 }`}
               >
                 <Flame className="w-3.5 h-3.5 text-amber-300" />
-                <span>Important Queue ({ticketsData.metrics?.urgent || 0})</span>
+                <span>Important Queue ({(ticketsData.tickets || []).filter(t => t.priority === 'Urgent' || t.priority === 'High').length})</span>
               </button>
               <button
                 onClick={() => setSelectedQueue('NORMAL')}
@@ -533,7 +616,7 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
                         onClick={() => onSelectTicket(t.id)}
                         className="hover:bg-slate-50 cursor-pointer transition-colors"
                       >
-                        <td className="px-4 py-3 font-mono font-bold text-[#111827]">{t.id}</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#111827]">{getTicketNumber(t)}</td>
                         <td className="px-4 py-3 font-semibold">{t.category}</td>
                         <td className="px-4 py-3">
                           <span className="font-bold text-[#E8001D]">{t.program}</span> • {t.subject}
@@ -568,7 +651,7 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-bold text-[#111827]">
-                          {t.id}
+                          {getTicketNumber(t)}
                         </span>
                         <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700">
                           {t.category}
@@ -628,15 +711,15 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white rounded-2xl p-5 border border-[#E5E7EB] shadow-xs">
               <span className="text-xs font-semibold text-slate-500 block">Total Eligible Records</span>
-              <span className="text-2xl font-extrabold text-[#111827]">{rosterData.metrics?.total || 0}</span>
+              <span className="text-2xl font-extrabold text-[#111827]">{displayRoster.length}</span>
             </div>
             <div className="bg-white rounded-2xl p-5 border border-[#E5E7EB] shadow-xs">
               <span className="text-xs font-semibold text-slate-500 block">Claimed / Registered</span>
-              <span className="text-2xl font-extrabold text-[#1CAB55]">{rosterData.metrics?.claimed || 0}</span>
+              <span className="text-2xl font-extrabold text-[#1CAB55]">{displayRoster.filter(r => r.is_claimed).length}</span>
             </div>
             <div className="bg-white rounded-2xl p-5 border border-[#E5E7EB] shadow-xs">
               <span className="text-xs font-semibold text-slate-500 block">Unclaimed / Available</span>
-              <span className="text-2xl font-extrabold text-amber-600">{rosterData.metrics?.unclaimed || 0}</span>
+              <span className="text-2xl font-extrabold text-amber-600">{displayRoster.filter(r => !r.is_claimed).length}</span>
             </div>
           </div>
 
@@ -695,7 +778,7 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {(rosterData.roster || []).map((r) => (
+                {displayRoster.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 font-mono font-bold text-[#111827]">{r.tms_id}</td>
                     <td className="px-4 py-3 font-mono">{r.phone}</td>
@@ -723,52 +806,119 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
 
       {/* ================= TAB 3: CAPTAIN MANAGEMENT ================= */}
       {activeTab === 'captains' && (
-        <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#111827]">
-              Active Batch Captains
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {(captainsData.captains || []).map((capt) => (
-                <div key={capt.id} className="p-4 rounded-xl border border-slate-200 bg-amber-50/30 flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-[#111827]">{capt.full_name}</h4>
-                    <p className="text-xs text-slate-500 font-mono">{capt.phone} • {capt.program} ({capt.department})</p>
-                    <span className="text-[10px] text-amber-800 font-semibold">{capt.college}</span>
-                  </div>
-                  <button
-                    onClick={() => handleToggleCaptain(capt.id, false)}
-                    className="px-3 py-1 rounded-lg text-xs font-bold bg-red-50 text-red-700 hover:bg-red-100 border border-red-200"
-                  >
-                    Revoke Captain
-                  </button>
-                </div>
-              ))}
+        <div className="space-y-5">
+          {user?.role !== 'admin' ? (
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 text-sm text-slate-600">
+              Captain invitation management is available to admins only.
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  ['Preapproved Captains', captainRoster.length],
+                  ['Registered', captainRoster.filter(c => c.claimed_user_id).length],
+                  ['Not Registered', captainRoster.filter(c => !c.claimed_user_id).length]
+                ].map(([label, value]) => (
+                  <div key={label} className="bg-white rounded-2xl border border-[#E5E7EB] p-5">
+                    <p className="text-xs font-semibold text-slate-500">{label}</p>
+                    <p className="text-2xl font-extrabold text-[#111827] mt-1">{value}</p>
+                  </div>
+                ))}
+              </div>
 
-          <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-xs p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#111827]">
-              Eligible Student Candidates to Promote
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {(captainsData.candidates || []).map((stu) => (
-                <div key={stu.id} className="p-4 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-[#111827]">{stu.full_name}</h4>
-                    <p className="text-xs text-slate-500 font-mono">{stu.phone} • {stu.program} ({stu.department})</p>
-                    <span className="text-[10px] text-slate-400">{stu.college}</span>
+              <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative">
+                    <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                    <input className="input-ten pl-9 text-xs w-60" placeholder="Search name, phone, subject, TMS..." value={captainSearch} onChange={e => setCaptainSearch(e.target.value)} />
                   </div>
-                  <button
-                    onClick={() => handleToggleCaptain(stu.id, true)}
-                    className="btn-primary text-xs py-1.5 px-3"
-                  >
-                    Promote to Captain
-                  </button>
+                  <select className="input-ten text-xs w-auto" value={captainStatusFilter} onChange={e => setCaptainStatusFilter(e.target.value)}>
+                    <option value="ALL">All Registration Status</option>
+                    <option value="REGISTERED">Registered</option>
+                    <option value="NOT_REGISTERED">Not Registered</option>
+                  </select>
                 </div>
-              ))}
-            </div>
-          </div>
+                <button type="button" onClick={fetchCaptains} disabled={captainRosterLoading} className="btn-secondary text-xs">
+                  <RefreshCw className="w-3.5 h-3.5" /> {captainRosterLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              </div>
+
+              {captainRosterError && (
+                <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-xs font-semibold">{captainRosterError}</div>
+              )}
+
+              {issuedInvitation && (
+                <div className="bg-white rounded-2xl border-2 border-amber-300 p-5 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-bold text-[#111827]">Registration Code — Share Privately</h3>
+                      <p className="text-xs text-slate-500">{issuedInvitation.captain_name} · {issuedInvitation.login_phone}</p>
+                    </div>
+                    <button type="button" className="text-xs font-bold text-slate-500" onClick={() => setIssuedInvitation(null)}>Close</button>
+                  </div>
+                  <p className="font-mono text-2xl tracking-[0.25em] font-extrabold text-[#111827]">{issuedInvitation.registration_code}</p>
+                  <p className="text-xs text-amber-800">Expires: {new Date(issuedInvitation.expires_at).toLocaleString()}. This code is displayed only in this response; keep it private.</p>
+                  <button type="button" onClick={copyCaptainInvitation} className="btn-primary text-xs"><Copy className="w-3.5 h-3.5" /> Copy Invitation</button>
+                </div>
+              )}
+
+              <div className="bg-white rounded-2xl border border-[#E5E7EB] overflow-hidden">
+                <div className="px-5 py-4 border-b border-slate-100">
+                  <h3 className="text-base font-bold text-[#111827]">Preapproved Captain Roster</h3>
+                  <p className="text-xs text-slate-500">Captain details come from the admin-approved roster. Reference TMS IDs are informational, not required at registration.</p>
+                </div>
+                {captainRosterLoading && captainRoster.length === 0 ? (
+                  <p className="p-6 text-xs text-slate-500">Loading Captains...</p>
+                ) : displayCaptains.length === 0 ? (
+                  <p className="p-6 text-xs text-slate-500">No Captains found for the selected filters.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 text-slate-600 uppercase text-[10px] font-bold border-b border-slate-200">
+                        <tr>
+                          <th className="px-4 py-3">Captain</th>
+                          <th className="px-4 py-3">Program / Subject</th>
+                          <th className="px-4 py-3">Login Number</th>
+                          <th className="px-4 py-3">Reference TMS IDs</th>
+                          <th className="px-4 py-3">Status</th>
+                          <th className="px-4 py-3">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {displayCaptains.map(c => (
+                          <tr key={c.id} className="hover:bg-slate-50">
+                            <td className="px-4 py-3 font-bold text-[#111827]">{c.full_name}</td>
+                            <td className="px-4 py-3"><span className="font-bold text-[#E8001D]">{c.program}</span><span className="block text-slate-500">{c.subject}</span></td>
+                            <td className="px-4 py-3 font-mono">{c.login_phone}</td>
+                            <td className="px-4 py-3 font-mono text-[11px]">{(c.reference_ids || []).join(', ') || '—'}</td>
+                            <td className="px-4 py-3">
+                              {c.claimed_user_id ? (
+                                <span className="rounded-full px-2 py-1 bg-emerald-100 text-emerald-800 font-bold">Registered</span>
+                              ) : !c.is_active ? (
+                                <span className="rounded-full px-2 py-1 bg-slate-100 text-slate-600 font-bold">Inactive</span>
+                              ) : (
+                                <span className="rounded-full px-2 py-1 bg-amber-100 text-amber-800 font-bold">Not Registered</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <button
+                                type="button"
+                                onClick={() => handleGenerateCaptainInvite(c)}
+                                disabled={Boolean(c.claimed_user_id) || !c.is_active || Boolean(invitingCaptainId)}
+                                className="btn-primary text-xs whitespace-nowrap disabled:opacity-40"
+                              >
+                                {invitingCaptainId === c.id ? 'Generating...' : c.invitation_expires_at && new Date(c.invitation_expires_at).getTime() > Date.now() ? 'Regenerate Code' : 'Generate Code'}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -796,7 +946,7 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
                     }`}>
                       {n.priority}
                     </span>
-                    <span className="text-xs font-bold text-[#E8001D]">Target: {n.target_program} ({n.target_department})</span>
+                    <span className="text-xs font-bold text-[#E8001D]">Target: {n.program || 'All'} ({n.department || 'All'})</span>
                     <span className="text-[11px] text-slate-400">{new Date(n.created_at).toLocaleDateString()}</span>
                   </div>
                   <h4 className="text-sm font-bold text-[#111827]">{n.title}</h4>
@@ -840,10 +990,10 @@ export default function StaffDesk({ user, onSelectTicket, lang }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {auditLogs.map((log) => (
+                {displayAuditLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 text-slate-400 font-mono text-[11px]">
-                      {new Date(log.timestamp).toLocaleString()}
+                      {new Date(log.timestamp || log.created_at).toLocaleString()}
                     </td>
                     <td className="px-4 py-3 font-bold text-[#111827]">{log.actor_name}</td>
                     <td className="px-4 py-3 font-semibold text-slate-600">{log.actor_role}</td>
