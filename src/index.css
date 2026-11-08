@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+:root {
+  /* ---------- 10MS Brand Tokens from DESIGN.md ---------- */
+  --ten-red:        #E8001D;   /* primary identity red — logo, accents, focus */
+  --ten-red-dark:   #931212;   /* deep header / banner red */
+  --ten-red-deep:   #721111;   /* deepest red */
+  --ten-red-accent: #A51E35;
+  --ten-red-soft:   #F14545;
+  --ten-black:      #000000;
+  --ten-white:      #FFFFFF;
+  --ten-ink:        #111827;   /* near-black for body text — never pure #000 */
+
+  /* ---------- Semantic Action Tokens ---------- */
+  --success:        #1CAB55;   /* Action CTA green — the primary action color */
+  --success-dark:   #0E7B4F;   /* Action CTA border */
+  --success-deep:   #149353;   /* Secondary green */
+  --success-text:   #1B9E66;
+  --warn:           #EA580C;
+  --warn-deep:      #A23F00;
+  --info:           #274FE3;
+  --info-soft:      #AFC3E6;
+
+  /* ---------- Neutrals ---------- */
+  --gray-50:  #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --gray-900: #111827;
+
+  /* ---------- Surfaces ---------- */
+  --bg:             #FFFFFF;
+  --bg-muted:       #F3F4F6;
+  --surface-card:   #FFFFFF;
+  --border:         #E5E7EB;
+  --border-strong:  #D1D5DB;
+
+  /* ---------- Typography & Radii ---------- */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-bn:   'Hind Siliguri', 'Noto Sans Bengali', sans-serif;
+
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   24px;
+  --r-pill: 1000px;
+
+  /* ---------- Shadows ---------- */
+  --sh-card:      0 1px 2px rgba(17, 24, 39, 0.04), 0 1px 3px rgba(17, 24, 39, 0.06);
+  --sh-inset-btn: inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ten-ink);
+  background-color: #F9FAFB;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 10MS Card Primitive - Elevation by 1px border, not drop shadow */
+.ten-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 16px;
+  box-shadow: var(--sh-card);
+  transition: border-color 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ten-card-hover:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+/* 10MS Primary Action Button - Green #1CAB55 with inset highlight (NOT RED!) */
+.btn-primary {
+  background: var(--success);
+  border: 1px solid var(--success-dark);
+  box-shadow: var(--sh-inset-btn);
+  color: var(--ten-white);
+  font-weight: 700;
+  border-radius: var(--r-sm);
+  padding: 12px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 180ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 180ms;
+}
+
+.btn-primary:hover {
+  background: #17994B;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 10MS Secondary Button */
+.btn-secondary {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  color: var(--gray-700);
+  font-weight: 600;
+  border-radius: var(--r-sm);
+  padding: 10px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 180ms;
+}
+
+.btn-secondary:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-300);
+  color: var(--gray-900);
+}
+
+/* 10MS Input - Red focus ring (3px translucent red) */
+.input-ten {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  background: #FFFFFF;
+  color: var(--ten-ink);
+  transition: border-color 180ms, box-shadow 180ms;
+}
+
+.input-ten:focus {
+  outline: none;
+  border-color: var(--ten-red);
+  box-shadow: 0 0 0 3px rgba(232, 0, 29, 0.12);
+}
+
+/* Group Tabs (Segmented Selector) from DESIGN.md Section 8.4 */
+.group-tab {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: #FFFFFF;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 180ms;
+  text-align: center;
+}
+
+.group-tab:hover {
+  border-color: var(--gray-400);
+}
+
+.group-tab.active {
+  border-color: var(--ten-red);
+  background: #FFF5F6;
+  color: var(--ten-red);
+  box-shadow: 0 0 0 3px rgba(232, 0, 29, 0.08);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F3F4F6;
+}
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}

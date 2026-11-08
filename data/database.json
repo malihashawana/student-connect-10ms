@@ -1,0 +1,842 @@
+{
+  "roster": [
+    {
+      "id": "ROS-001",
+      "tms_id": "TMS-2026-78901",
+      "phone": "01711000001",
+      "program": "HSC 28",
+      "student_name": "Rahat Chowdhury",
+      "is_claimed": true,
+      "claimed_by_user_id": "USR-2026-001",
+      "claimed_at": "2026-10-10T09:30:00Z",
+      "import_source": "Admin Initial Roster"
+    },
+    {
+      "id": "ROS-002",
+      "tms_id": "TMS-2026-78902",
+      "phone": "01811000002",
+      "program": "HSC 28",
+      "student_name": "Sadia Islam",
+      "is_claimed": true,
+      "claimed_by_user_id": "USR-2026-002",
+      "claimed_at": "2026-10-12T11:00:00Z",
+      "import_source": "Admin Initial Roster"
+    },
+    {
+      "id": "ROS-003",
+      "tms_id": "TMS-2026-78903",
+      "phone": "01911000003",
+      "program": "HSC 28",
+      "student_name": "Fahim Ahsan",
+      "is_claimed": true,
+      "claimed_by_user_id": "USR-2026-003",
+      "claimed_at": "2026-10-14T14:15:00Z",
+      "import_source": "Admin Initial Roster"
+    },
+    {
+      "id": "ROS-004",
+      "tms_id": "TMS-2026-78904",
+      "phone": "01611000004",
+      "program": "HSC 27",
+      "student_name": "Nusrat Jahan",
+      "is_claimed": true,
+      "claimed_by_user_id": "USR-2026-004",
+      "claimed_at": "2026-10-15T16:00:00Z",
+      "import_source": "Admin Initial Roster"
+    },
+    {
+      "id": "ROS-005",
+      "tms_id": "TMS-2026-90001",
+      "phone": "01700112233",
+      "program": "HSC 28",
+      "student_name": "Zubair Hossain",
+      "is_claimed": false,
+      "claimed_by_user_id": null,
+      "claimed_at": null,
+      "import_source": "bKash/Nagad Verified Batch"
+    },
+    {
+      "id": "ROS-006",
+      "tms_id": "TMS-2026-90002",
+      "phone": "01800223344",
+      "program": "HSC 28",
+      "student_name": "Tasnim Haque",
+      "is_claimed": false,
+      "claimed_by_user_id": null,
+      "claimed_at": null,
+      "import_source": "bKash/Nagad Verified Batch"
+    },
+    {
+      "id": "ROS-007",
+      "tms_id": "TMS-2026-90003",
+      "phone": "01900334455",
+      "program": "HSC 27",
+      "student_name": "Arman Mallik",
+      "is_claimed": true,
+      "claimed_by_user_id": "USR-302011",
+      "claimed_at": "2026-11-08T17:18:22.012Z",
+      "import_source": "bKash/Nagad Verified Batch"
+    },
+    {
+      "id": "ROS-008",
+      "tms_id": "TMS-2026-90004",
+      "phone": "01500445566",
+      "program": "HSC 27",
+      "student_name": "Afsana Mimi",
+      "is_claimed": false,
+      "claimed_by_user_id": null,
+      "claimed_at": null,
+      "import_source": "bKash/Nagad Verified Batch"
+    },
+    {
+      "id": "ROS-009",
+      "tms_id": "TMS-2026-90005",
+      "phone": "01300556677",
+      "program": "HSC 28",
+      "student_name": "Kawsar Mahmud",
+      "is_claimed": false,
+      "claimed_by_user_id": null,
+      "claimed_at": null,
+      "import_source": "bKash/Nagad Verified Batch"
+    },
+    {
+      "id": "ROS-010",
+      "tms_id": "TMS-2026-90006",
+      "phone": "01400667788",
+      "program": "HSC 28",
+      "student_name": "Nafis Imtiaz",
+      "is_claimed": false,
+      "claimed_by_user_id": null,
+      "claimed_at": null,
+      "import_source": "bKash/Nagad Verified Batch"
+    }
+  ],
+  "users": [
+    {
+      "id": "STAFF-1001",
+      "role": "admin",
+      "staff_id": "STAFF-1001",
+      "phone": "01700000000",
+      "email": "admin@10ms.com",
+      "full_name": "Tanvir Hossain (Lead Operations)",
+      "program": "ALL",
+      "department": "ALL",
+      "status": "active",
+      "password_hash": "$2b$10$BBjY/ctNyZxVNSsWXuBEzecHZJIU4eiNxKMvk.mkqtJDGw15kqIv.",
+      "created_at": "2026-10-01T08:00:00Z"
+    },
+    {
+      "id": "STAFF-1002",
+      "role": "staff",
+      "staff_id": "STAFF-1002",
+      "phone": "01700000002",
+      "email": "support.officer@10ms.com",
+      "full_name": "Anika Rahman (Issue Desk Specialist)",
+      "program": "ALL",
+      "department": "ALL",
+      "status": "active",
+      "password_hash": "$2b$10$BBjY/ctNyZxVNSsWXuBEzecHZJIU4eiNxKMvk.mkqtJDGw15kqIv.",
+      "created_at": "2026-10-05T08:00:00Z"
+    },
+    {
+      "id": "USR-2026-001",
+      "role": "captain",
+      "phone": "01711000001",
+      "tms_id": "TMS-2026-78901",
+      "full_name": "Rahat Chowdhury (Captain)",
+      "email": "rahat.captain@gmail.com",
+      "program": "HSC 28",
+      "department": "Science",
+      "college": "Dhaka College",
+      "district": "Dhaka",
+      "class_level": "HSC 1st Year",
+      "academic_year": "2026-2028",
+      "address": "Dhanmondi, Dhaka",
+      "status": "active",
+      "password_hash": "$2b$10$zeNPae21xDgF0HM3BSwe5OL57BRTecKfhPMV9bl0MY3KF.tB.SDqC",
+      "created_at": "2026-10-10T09:30:00Z"
+    },
+    {
+      "id": "USR-2026-002",
+      "role": "student",
+      "phone": "01811000002",
+      "tms_id": "TMS-2026-78902",
+      "full_name": "Sadia Islam",
+      "email": "sadia.islam@gmail.com",
+      "program": "HSC 28",
+      "department": "Science",
+      "college": "Viqarunnisa Noon College",
+      "district": "Dhaka",
+      "class_level": "HSC 1st Year",
+      "academic_year": "2026-2028",
+      "address": "Baily Road, Dhaka",
+      "status": "active",
+      "password_hash": "$2b$10$gnY3VkdEXpOjGo/K8YJiIurVVJEtcQD.grKg.JL9742xZ72pWcgti",
+      "created_at": "2026-10-12T11:00:00Z"
+    },
+    {
+      "id": "USR-2026-003",
+      "role": "student",
+      "phone": "01911000003",
+      "tms_id": "TMS-2026-78903",
+      "full_name": "Fahim Ahsan",
+      "email": "fahim.ahsan@gmail.com",
+      "program": "HSC 28",
+      "department": "Business Studies",
+      "college": "Notre Dame College",
+      "district": "Dhaka",
+      "class_level": "HSC 1st Year",
+      "academic_year": "2026-2028",
+      "address": "Motijheel, Dhaka",
+      "status": "active",
+      "password_hash": "$2b$10$gnY3VkdEXpOjGo/K8YJiIurVVJEtcQD.grKg.JL9742xZ72pWcgti",
+      "created_at": "2026-10-14T14:15:00Z"
+    },
+    {
+      "id": "USR-2026-004",
+      "role": "student",
+      "phone": "01611000004",
+      "tms_id": "TMS-2026-78904",
+      "full_name": "Nusrat Jahan",
+      "email": "nusrat.jahan@gmail.com",
+      "program": "HSC 27",
+      "department": "Humanities",
+      "college": "Holy Cross College",
+      "district": "Dhaka",
+      "class_level": "HSC 2nd Year",
+      "academic_year": "2025-2027",
+      "address": "Tejgaon, Dhaka",
+      "status": "active",
+      "password_hash": "$2b$10$gnY3VkdEXpOjGo/K8YJiIurVVJEtcQD.grKg.JL9742xZ72pWcgti",
+      "created_at": "2026-10-15T16:00:00Z"
+    },
+    {
+      "id": "USR-302011",
+      "role": "student",
+      "phone": "01900334455",
+      "tms_id": "TMS-2026-90003",
+      "full_name": "Arman Mallik",
+      "email": "",
+      "program": "HSC 27",
+      "department": "Humanities",
+      "college": "Dhaka City College",
+      "district": "Dhaka",
+      "class_level": "HSC 2nd Year",
+      "academic_year": "2025-2027",
+      "address": "",
+      "contact_phone": "01900334455",
+      "status": "active",
+      "password_hash": "$2b$10$MqhDf/XY3.IsYL95/Bxpze4o42SRt2XY1jvE1fEljwhoLEXyKNQsG",
+      "created_at": "2026-11-08T17:18:22.011Z"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "TKT-2026-477",
+      "reporter_user_id": "USR-2026-001",
+      "reporter_role": "captain",
+      "reporter_name": "Rahat Chowdhury (Captain)",
+      "reporter_phone": "01711000001",
+      "affected_scope": "specific_student",
+      "affected_student_phone": "01811000002",
+      "affected_student_name": "Sadia Islam",
+      "category": "App/Website",
+      "program": "HSC 28",
+      "department": "Science",
+      "subject": "General",
+      "priority": "Urgent",
+      "status": "Resolved",
+      "title": "ভিডিও প্লেয়ার ব্ল্যাক স্ক্রিন",
+      "description": "ছাত্রীর ফোনে ভিডিও চালু করলে শুধু কালো স্ক্রিন আসছে।",
+      "context_details": {
+        "app_platform": "Android App",
+        "app_version": "v4.8.2"
+      },
+      "attachments": [],
+      "assigned_staff_id": null,
+      "assigned_staff_name": null,
+      "resolution_notes": "ভিডিও ক্যাশ ক্লিয়ার এবং অ্যাপ v4.8.3 প্যাচ পুশ করা হয়েছে।",
+      "resolved_at": "2026-11-08T17:18:22.392Z",
+      "created_at": "2026-11-08T17:18:22.273Z",
+      "updated_at": "2026-11-08T17:18:22.392Z"
+    },
+    {
+      "id": "TKT-2026-832",
+      "reporter_user_id": "USR-302011",
+      "reporter_role": "student",
+      "reporter_name": "Arman Mallik",
+      "reporter_phone": "01900334455",
+      "affected_scope": "self",
+      "affected_student_phone": null,
+      "affected_student_name": null,
+      "category": "Exam",
+      "program": "HSC 27",
+      "department": "Humanities",
+      "subject": "Civics 1st Paper",
+      "priority": "Normal",
+      "status": "Open",
+      "title": "ডেইলি এক্সাম অপশন এরর",
+      "description": "ডেইলি এক্সামের ৪ নং প্রশ্নে দুটি সঠিক উত্তর ছিল।",
+      "context_details": {
+        "exam_type": "Daily Exam",
+        "exam_date": "N/A",
+        "is_date_na": true,
+        "exam_title": "ব্রিটিশ ভারতে প্রতিনিধিত্বশীল সরকার"
+      },
+      "attachments": [],
+      "assigned_staff_id": null,
+      "assigned_staff_name": null,
+      "resolution_notes": null,
+      "resolved_at": null,
+      "created_at": "2026-11-08T17:18:22.132Z",
+      "updated_at": "2026-11-08T17:18:22.132Z"
+    },
+    {
+      "id": "TKT-2026-157",
+      "reporter_user_id": "USR-302011",
+      "reporter_role": "student",
+      "reporter_name": "Arman Mallik",
+      "reporter_phone": "01900334455",
+      "affected_scope": "self",
+      "affected_student_phone": null,
+      "affected_student_name": null,
+      "category": "Class",
+      "program": "HSC 27",
+      "department": "Humanities",
+      "subject": "Economics 1st Paper",
+      "priority": "Normal",
+      "status": "Open",
+      "title": "লাইভ ক্লাসে অডিও সমস্যা",
+      "description": "ক্লাস চলাকালীন শব্দ কেটে কেটে যাচ্ছিল।",
+      "context_details": {
+        "class_type": "Live Class",
+        "class_date": "2026-10-25",
+        "session_title": "অর্থনীতির মৌলিক ধারণা"
+      },
+      "attachments": [],
+      "assigned_staff_id": null,
+      "assigned_staff_name": null,
+      "resolution_notes": null,
+      "resolved_at": null,
+      "created_at": "2026-11-08T17:18:22.130Z",
+      "updated_at": "2026-11-08T17:18:22.130Z"
+    },
+    {
+      "id": "TKT-2026-101",
+      "reporter_user_id": "USR-2026-002",
+      "reporter_role": "student",
+      "reporter_name": "Sadia Islam",
+      "reporter_phone": "01811000002",
+      "affected_scope": "self",
+      "affected_student_phone": null,
+      "affected_student_name": null,
+      "category": "Class",
+      "program": "HSC 28",
+      "department": "Science",
+      "subject": "Higher Math 1st Paper",
+      "priority": "Normal",
+      "status": "In Progress",
+      "title": "লাইভ ক্লাসে অডিও ও ভিডিও সিংক হচ্ছে না (ম্যাট্রিক্স ও নির্ণায়ক)",
+      "description": "গতকালকের হায়ার ম্যাথ লাইভ ক্লাসে শেষের ৩০ মিনিট স্যার যখন ম্যাট্রিক্সের বিপরীত ম্যাট্রিক্স করাচ্ছিলেন তখন স্যারের কথা আগে আসছিল এবং ভিডিও ৫ সেকেন্ড পিছিয়ে যাচ্ছিল। স্লাইডও ফ্রিজ হয়ে গিয়েছিল।",
+      "context_details": {
+        "class_type": "Live Class",
+        "class_date": "October 1, 2026, Thursday",
+        "session_title": "ম্যাট্রিক্সের ধারণা ও যোগ-বিয়োগ",
+        "problem_specific": "Audio-Video sync issue & slide freeze"
+      },
+      "attachments": [
+        {
+          "name": "screen_freeze_matrix.png",
+          "url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80",
+          "size": "240 KB",
+          "type": "image/png"
+        }
+      ],
+      "assigned_staff_id": "STAFF-1002",
+      "assigned_staff_name": "Anika Rahman (Issue Desk Specialist)",
+      "resolution_notes": null,
+      "resolved_at": null,
+      "created_at": "2026-10-18T14:20:00Z",
+      "updated_at": "2026-10-18T16:00:00Z"
+    },
+    {
+      "id": "TKT-2026-102",
+      "reporter_user_id": "USR-2026-003",
+      "reporter_role": "student",
+      "reporter_name": "Fahim Ahsan",
+      "reporter_phone": "01911000003",
+      "affected_scope": "self",
+      "affected_student_phone": null,
+      "affected_student_name": null,
+      "category": "Exam",
+      "program": "HSC 28",
+      "department": "Business Studies",
+      "subject": "Finance 1st Paper",
+      "priority": "High",
+      "status": "Open",
+      "title": "ডেইলি এক্সাম সাবমিট করার পর অটো ০ মার্ক দেখাচ্ছে",
+      "description": "ফাইন্যান্স প্রথম পত্রের অর্থায়নের সূচনা ডেইলি এক্সামে ১৫ টি প্রশ্নের মধ্যে ১৪ টির উত্তর দিয়ে সাবমিট করার পর স্কোরবোর্ডে ফলাফল ০ দেখাচ্ছে এবং উত্তরপত্র রিভিউ করা যাচ্ছে না।",
+      "context_details": {
+        "exam_type": "Daily Exam",
+        "exam_date": "October 1, 2026, Thursday",
+        "is_date_na": false,
+        "exam_title": "অর্থায়নের ধারণা, ক্রমবিকাশ, এবং স্বরূপ",
+        "problem_type": "Wrong marks computation & submission glitch"
+      },
+      "attachments": [],
+      "assigned_staff_id": null,
+      "assigned_staff_name": null,
+      "resolution_notes": null,
+      "resolved_at": null,
+      "created_at": "2026-10-19T09:10:00Z",
+      "updated_at": "2026-10-19T09:10:00Z"
+    },
+    {
+      "id": "TKT-2026-103",
+      "reporter_user_id": "USR-2026-001",
+      "reporter_role": "captain",
+      "reporter_name": "Rahat Chowdhury (Captain)",
+      "reporter_phone": "01711000001",
+      "affected_scope": "specific_student",
+      "affected_student_phone": "01811000002",
+      "affected_student_name": "Sadia Islam",
+      "category": "App/Website",
+      "program": "HSC 28",
+      "department": "Science",
+      "subject": "Physics 1st Paper",
+      "priority": "Urgent",
+      "status": "Open",
+      "title": "[Captain Escalation] অ্যান্ড্রয়েড অ্যাপে ভিডিও প্লেয়ারে এরর 403 দেখাচ্ছে",
+      "description": "শিক্ষার্থী সাদিয়া ইসলাম আমাকে ক্যাপ্টেন হিসেবে রিপোর্ট করেছেন যে ১০ মিনিট স্কুল অ্যান্ড্রয়েড অ্যাপের ভার্সন ৪.৮.২ এ ফিজিক্স ভিডিও প্লে করতে গেলে Forbidden 403 দেখাচ্ছে। ওয়েবে লগইন কাজ করলেও অ্যাপে ভিডিও লোড হচ্ছে না। আমি ক্যাপ্টেন হিসেবে এটি আর্জেন্ট তদন্তের জন্য পাঠাচ্ছি।",
+      "context_details": {
+        "app_platform": "Android App",
+        "app_version": "v4.8.2 (Build 202610)",
+        "problem_type": "Video player DRM/403 stream error",
+        "device_info": "Samsung Galaxy A54, Android 14"
+      },
+      "attachments": [
+        {
+          "name": "app_error_403.jpg",
+          "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80",
+          "size": "180 KB",
+          "type": "image/jpeg"
+        }
+      ],
+      "assigned_staff_id": "STAFF-1001",
+      "assigned_staff_name": "Tanvir Hossain (Lead Operations)",
+      "resolution_notes": null,
+      "resolved_at": null,
+      "created_at": "2026-10-20T11:45:00Z",
+      "updated_at": "2026-10-20T11:50:00Z"
+    },
+    {
+      "id": "TKT-2026-104",
+      "reporter_user_id": "USR-2026-004",
+      "reporter_role": "student",
+      "reporter_name": "Nusrat Jahan",
+      "reporter_phone": "01611000004",
+      "affected_scope": "self",
+      "affected_student_phone": null,
+      "affected_student_name": null,
+      "category": "Others",
+      "program": "HSC 27",
+      "department": "Humanities",
+      "subject": "Civics 2nd Paper",
+      "priority": "Normal",
+      "status": "Resolved",
+      "title": "পৌরনীতি লেকচার শিট ডাউনলোড লিংকে ৪MD পেজ ওপেন হচ্ছে না",
+      "description": "ব্রিটিশ ভারতে প্রতিনিধিত্বশীল সরকারের বিকাশ লেকচারের পিডিএফ হ্যান্ডনোট ডাউনলোড করার অপশন কাজ করছিল না।",
+      "context_details": {
+        "other_subtype": "Study Material / Lecture Sheet Download",
+        "custom_notes": "Civics Chapter 1 PDF link broken"
+      },
+      "attachments": [],
+      "assigned_staff_id": "STAFF-1002",
+      "assigned_staff_name": "Anika Rahman (Issue Desk Specialist)",
+      "resolution_notes": "পিডিএফ ড্রাইভ লিঙ্কটি পাবলিক রিড পারমিশন সহ আপডেট করে দেওয়া হয়েছে। এখন ড্যাশবোর্ড থেকে নির্বিঘ্নে ডাউনলোড করা যাবে।",
+      "resolved_at": "2026-10-21T17:30:00Z",
+      "created_at": "2026-10-21T13:00:00Z",
+      "updated_at": "2026-10-21T17:30:00Z"
+    }
+  ],
+  "ticket_messages": [
+    {
+      "id": "MSG-001",
+      "ticket_id": "TKT-2026-101",
+      "sender_user_id": "USR-2026-002",
+      "sender_name": "Sadia Islam",
+      "sender_role": "student",
+      "message": "গতকালকের হায়ার ম্যাথ লাইভ ক্লাসে শেষের ৩০ মিনিট স্যারের অডিও ও ভিডিও মিলছিল না। দয়া করে রেকর্ডেড ব্যাকআপ চেক করুন।",
+      "is_internal": false,
+      "attachments": [
+        {
+          "name": "screen_freeze_matrix.png",
+          "url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&auto=format&fit=crop&q=80",
+          "size": "240 KB",
+          "type": "image/png"
+        }
+      ],
+      "created_at": "2026-10-18T14:20:00Z"
+    },
+    {
+      "id": "MSG-002",
+      "ticket_id": "TKT-2026-101",
+      "sender_user_id": "STAFF-1002",
+      "sender_name": "Anika Rahman (Issue Desk Specialist)",
+      "sender_role": "staff",
+      "message": "প্রিয় সাদিয়া, আমরা ব্রডকাস্ট ব্যাকআপ ভিডিওটি প্রসেস করে লাইব্রেরিতে ফ্রেশ এনকোডেড ভার্সন আপলোড করে দিচ্ছি। ১ ঘণ্টার মধ্যে চেক করতে পারবেন।",
+      "is_internal": false,
+      "attachments": [],
+      "created_at": "2026-10-18T16:00:00Z"
+    },
+    {
+      "id": "MSG-003",
+      "ticket_id": "TKT-2026-101",
+      "sender_user_id": "STAFF-1002",
+      "sender_name": "Anika Rahman (Issue Desk Specialist)",
+      "sender_role": "staff",
+      "message": "Tech team verified: Stream ingestion buffer spiked at 21:40 GMT+6. Replaced with local teacher recording.",
+      "is_internal": true,
+      "attachments": [],
+      "created_at": "2026-10-18T16:05:00Z"
+    },
+    {
+      "id": "MSG-1794158302130-1",
+      "ticket_id": "TKT-2026-157",
+      "sender_user_id": "USR-302011",
+      "sender_name": "Arman Mallik",
+      "sender_role": "student",
+      "message": "ক্লাস চলাকালীন শব্দ কেটে কেটে যাচ্ছিল।",
+      "is_internal": false,
+      "attachments": [],
+      "created_at": "2026-11-08T17:18:22.130Z"
+    },
+    {
+      "id": "MSG-1794158302132-1",
+      "ticket_id": "TKT-2026-832",
+      "sender_user_id": "USR-302011",
+      "sender_name": "Arman Mallik",
+      "sender_role": "student",
+      "message": "ডেইলি এক্সামের ৪ নং প্রশ্নে দুটি সঠিক উত্তর ছিল।",
+      "is_internal": false,
+      "attachments": [],
+      "created_at": "2026-11-08T17:18:22.132Z"
+    },
+    {
+      "id": "MSG-1794158302273-1",
+      "ticket_id": "TKT-2026-477",
+      "sender_user_id": "USR-2026-001",
+      "sender_name": "Rahat Chowdhury (Captain)",
+      "sender_role": "captain",
+      "message": "ছাত্রীর ফোনে ভিডিও চালু করলে শুধু কালো স্ক্রিন আসছে।",
+      "is_internal": false,
+      "attachments": [],
+      "created_at": "2026-11-08T17:18:22.273Z"
+    },
+    {
+      "id": "MSG-1794158302276-esc",
+      "ticket_id": "TKT-2026-477",
+      "sender_user_id": "USR-2026-001",
+      "sender_name": "Rahat Chowdhury (Captain)",
+      "sender_role": "captain",
+      "message": "[ক্যাপ্টেন এসকেলেশন]: এই সমস্যাটি জরুরি সমাধানের জন্য অনুরোধ করা হয়েছে। কারণ: জরুরি পরীক্ষা কাল সকালে",
+      "is_internal": false,
+      "attachments": [],
+      "created_at": "2026-11-08T17:18:22.276Z"
+    },
+    {
+      "id": "MSG-1794158302389-180",
+      "ticket_id": "TKT-2026-477",
+      "sender_user_id": "STAFF-1001",
+      "sender_name": "Tanvir Hossain (Lead Operations)",
+      "sender_role": "admin",
+      "message": "DevOps team notified about Android DRM decoder error.",
+      "is_internal": true,
+      "attachments": [],
+      "created_at": "2026-11-08T17:18:22.389Z"
+    }
+  ],
+  "notices": [
+    {
+      "id": "NOT-2026-001",
+      "title": "HSC 28 অনলাইন ব্যাচ: স্পেশাল রিভিশন ক্লাস ও ডেইলি এক্সাম শিডিউল",
+      "content": "সকল শিক্ষার্থীদের জানানো যাচ্ছে যে অক্টোবর মাসের সকল লাইভ ক্লাস এবং ডেইলি এক্সামের নতুন শিডিউল শিট আপডেট করা হয়েছে। শিক্ষার্থীরা তাদের ড্যাশবোর্ড থেকে রুটিন দেখে নির্ধারিত সময়ে ক্লাসে উপস্থিত থাকবেন।",
+      "priority": "Urgent",
+      "target_program": "HSC 28",
+      "target_department": "ALL",
+      "is_active": true,
+      "publish_date": "2026-10-16T10:00:00Z",
+      "expiry_date": "2026-12-31T23:59:59Z",
+      "created_by": "Tanvir Hossain (Lead Operations)",
+      "created_at": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "NOT-2026-002",
+      "title": "সার্ভার মেইনটেন্যান্স ও লাইভ প্লেয়ার অপটিমাইজেশন বিজ্ঞপ্তি",
+      "content": "আজ রাত ১২:০০ টা থেকে ২:০০ টা পর্যন্ত ১০ মিনিট স্কুল অ্যাপ ও ওয়েব সার্ভার মেইনটেন্যান্সের কাজ চলবে। সাময়িক অসুবিধার জন্য আন্তরিকভাবে দুঃখিত।",
+      "priority": "High",
+      "target_program": "ALL",
+      "target_department": "ALL",
+      "is_active": true,
+      "publish_date": "2026-10-20T12:00:00Z",
+      "expiry_date": "2026-11-30T23:59:59Z",
+      "created_by": "Anika Rahman (Issue Desk Specialist)",
+      "created_at": "2026-10-20T12:00:00Z"
+    },
+    {
+      "id": "NOT-2026-003",
+      "title": "HSC 27 ক্যান্ডিডেটদের জন্য CQ এক্সাম খাতা মূল্যায়ন গাইডলাইন",
+      "content": "মানবিক ও কমার্স বিভাগের শিক্ষার্থীরা পরীক্ষার খাতা জমাদানের পর আগামী ৭২ ঘণ্টার মধ্যে টিচার্স কমেন্ট ও মার্কস ড্যাশবোর্ডে দেখতে পাবেন।",
+      "priority": "Normal",
+      "target_program": "HSC 27",
+      "target_department": "ALL",
+      "is_active": true,
+      "publish_date": "2026-10-22T08:00:00Z",
+      "expiry_date": "2026-11-25T23:59:59Z",
+      "created_by": "Tanvir Hossain (Lead Operations)",
+      "created_at": "2026-10-22T08:00:00Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "NTF-1794158302392",
+      "user_id": "USR-2026-001",
+      "title": "টিকেট সমাধান সম্পন্ন!",
+      "message": "আপনার টিকেট TKT-2026-477 (ভিডিও প্লেয়ার ব্ল্যাক স্ক্রিন) সফলভাবে সমাধান করা হয়েছে। নোট: ভিডিও ক্যাশ ক্লিয়ার এবং অ্যাপ v4.8.3 প্যাচ পুশ করা হয়েছে।",
+      "type": "ticket_resolved",
+      "ticket_id": "TKT-2026-477",
+      "is_read": false,
+      "created_at": "2026-11-08T17:18:22.392Z"
+    },
+    {
+      "id": "NTF-001",
+      "user_id": "USR-2026-002",
+      "title": "টিকেট স্ট্যাটাস আপডেট: ইন প্রগ্রেস",
+      "message": "আপনার টিকেট TKT-2026-101 (লাইভ ক্লাসে অডিও ও ভিডিও সিংক হচ্ছে না) সাপোর্ট স্পেশালিস্ট আনিকা রহমানের কাছে অ্যাসাইন করা হয়েছে।",
+      "type": "ticket_reply",
+      "ticket_id": "TKT-2026-101",
+      "is_read": false,
+      "created_at": "2026-10-18T16:00:00Z"
+    },
+    {
+      "id": "NTF-002",
+      "user_id": "USR-2026-004",
+      "title": "টিকেট সমাধান সম্পন্ন!",
+      "message": "আপনার টিকেট TKT-2026-104 (পৌরনীতি লেকচার শিট ডাউনলোড লিংকে ৪MD পেজ ওপেন হচ্ছে না) সমাধান করা হয়েছে।",
+      "type": "ticket_resolved",
+      "ticket_id": "TKT-2026-104",
+      "is_read": true,
+      "created_at": "2026-10-21T17:30:00Z"
+    },
+    {
+      "id": "NTF-003",
+      "user_id": "USR-2026-001",
+      "title": "ক্যাপ্টেন এসকেলেশন গ্রহণ করা হয়েছে",
+      "message": "আপনার সাবমিট করা টিকেট TKT-2026-103 জরুরি ভিত্তিতে রিভিউ করা হচ্ছে।",
+      "type": "escalation",
+      "ticket_id": "TKT-2026-103",
+      "is_read": false,
+      "created_at": "2026-10-20T11:50:00Z"
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": "LOG-1794158302392-343",
+      "actor_user_id": "STAFF-1001",
+      "actor_name": "Tanvir Hossain (Lead Operations)",
+      "actor_role": "admin",
+      "action": "TICKET_UPDATED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-477",
+      "metadata": {
+        "changes": [
+          "Status changed from Open to Resolved"
+        ]
+      },
+      "timestamp": "2026-11-08T17:18:22.392Z"
+    },
+    {
+      "id": "LOG-1794158302389-565",
+      "actor_user_id": "STAFF-1001",
+      "actor_name": "Tanvir Hossain (Lead Operations)",
+      "actor_role": "admin",
+      "action": "INTERNAL_NOTE_ADDED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-477",
+      "metadata": {
+        "is_internal": true
+      },
+      "timestamp": "2026-11-08T17:18:22.389Z"
+    },
+    {
+      "id": "LOG-1794158302385-181",
+      "actor_user_id": "STAFF-1001",
+      "actor_name": "Tanvir Hossain (Lead Operations)",
+      "actor_role": "admin",
+      "action": "STAFF_LOGIN",
+      "target_type": "user",
+      "target_id": "STAFF-1001",
+      "metadata": {
+        "role": "admin"
+      },
+      "timestamp": "2026-11-08T17:18:22.385Z"
+    },
+    {
+      "id": "LOG-1794158302276-895",
+      "actor_user_id": "USR-2026-001",
+      "actor_name": "Rahat Chowdhury (Captain)",
+      "actor_role": "captain",
+      "action": "TICKET_ESCALATED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-477",
+      "metadata": {
+        "reason": "জরুরি পরীক্ষা কাল সকালে"
+      },
+      "timestamp": "2026-11-08T17:18:22.276Z"
+    },
+    {
+      "id": "LOG-1794158302273-368",
+      "actor_user_id": "USR-2026-001",
+      "actor_name": "Rahat Chowdhury (Captain)",
+      "actor_role": "captain",
+      "action": "TICKET_CREATED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-477",
+      "metadata": {
+        "category": "App/Website",
+        "subject": "General",
+        "priority": "Normal",
+        "affected_scope": "specific_student"
+      },
+      "timestamp": "2026-11-08T17:18:22.273Z"
+    },
+    {
+      "id": "LOG-1794158302265-25",
+      "actor_user_id": "USR-2026-001",
+      "actor_name": "Rahat Chowdhury (Captain)",
+      "actor_role": "captain",
+      "action": "USER_LOGIN",
+      "target_type": "user",
+      "target_id": "USR-2026-001",
+      "metadata": {
+        "role": "captain",
+        "ip": "::1"
+      },
+      "timestamp": "2026-11-08T17:18:22.265Z"
+    },
+    {
+      "id": "LOG-1794158302132-102",
+      "actor_user_id": "USR-302011",
+      "actor_name": "Arman Mallik",
+      "actor_role": "student",
+      "action": "TICKET_CREATED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-832",
+      "metadata": {
+        "category": "Exam",
+        "subject": "Civics 1st Paper",
+        "priority": "Normal",
+        "affected_scope": "self"
+      },
+      "timestamp": "2026-11-08T17:18:22.132Z"
+    },
+    {
+      "id": "LOG-1794158302130-23",
+      "actor_user_id": "USR-302011",
+      "actor_name": "Arman Mallik",
+      "actor_role": "student",
+      "action": "TICKET_CREATED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-157",
+      "metadata": {
+        "category": "Class",
+        "subject": "Economics 1st Paper",
+        "priority": "Normal",
+        "affected_scope": "self"
+      },
+      "timestamp": "2026-11-08T17:18:22.130Z"
+    },
+    {
+      "id": "LOG-1794158302122-224",
+      "actor_user_id": "USR-302011",
+      "actor_name": "Arman Mallik",
+      "actor_role": "student",
+      "action": "USER_LOGIN",
+      "target_type": "user",
+      "target_id": "USR-302011",
+      "metadata": {
+        "role": "student",
+        "ip": "::1"
+      },
+      "timestamp": "2026-11-08T17:18:22.122Z"
+    },
+    {
+      "id": "LOG-1794158302012-134",
+      "actor_user_id": "USR-302011",
+      "actor_name": "Arman Mallik",
+      "actor_role": "student",
+      "action": "USER_REGISTERED",
+      "target_type": "user",
+      "target_id": "USR-302011",
+      "metadata": {
+        "tms_id": "TMS-2026-90003",
+        "program": "HSC 27",
+        "department": "Humanities"
+      },
+      "timestamp": "2026-11-08T17:18:22.012Z"
+    },
+    {
+      "id": "LOG-1001",
+      "actor_user_id": "STAFF-1001",
+      "actor_name": "Tanvir Hossain (Lead Operations)",
+      "actor_role": "admin",
+      "action": "CAPTAIN_PROMOTED",
+      "target_type": "user",
+      "target_id": "USR-2026-001",
+      "metadata": {
+        "program": "HSC 28",
+        "reason": "Assigned as Science Captain"
+      },
+      "timestamp": "2026-10-10T10:00:00Z"
+    },
+    {
+      "id": "LOG-1002",
+      "actor_user_id": "USR-2026-001",
+      "actor_name": "Rahat Chowdhury (Captain)",
+      "actor_role": "captain",
+      "action": "TICKET_ESCALATED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-103",
+      "metadata": {
+        "priority": "Urgent",
+        "affected_student_phone": "01811000002"
+      },
+      "timestamp": "2026-10-20T11:45:00Z"
+    },
+    {
+      "id": "LOG-1003",
+      "actor_user_id": "STAFF-1002",
+      "actor_name": "Anika Rahman (Issue Desk Specialist)",
+      "actor_role": "staff",
+      "action": "STATUS_CHANGED",
+      "target_type": "ticket",
+      "target_id": "TKT-2026-104",
+      "metadata": {
+        "old_status": "In Progress",
+        "new_status": "Resolved"
+      },
+      "timestamp": "2026-10-21T17:30:00Z"
+    }
+  ],
+  "captain_assignments": [
+    {
+      "id": "CAPT-001",
+      "captain_user_id": "USR-2026-001",
+      "program": "HSC 28",
+      "scope": "Science & General",
+      "assigned_by_user_id": "STAFF-1001",
+      "active": true,
+      "created_at": "2026-10-10T10:00:00Z"
+    }
+  ]
+}
