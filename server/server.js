@@ -3440,10 +3440,15 @@ app.post(
  // Start Express Server
  // ------------------------------------------
 
- app.listen(PORT, () => {
-   console.log('======================================');
-   console.log(' Connect 10MS Server');
-   console.log(` Port: ${PORT}`);
-   console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
-   console.log('======================================');
- });
+
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log('======================================');
+    console.log(' Connect 10MS Server');
+    console.log(` Port: ${PORT}`);
+    console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log('======================================');
+  });
+}
+
+export default app;
